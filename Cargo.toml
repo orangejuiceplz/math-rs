@@ -1,0 +1,46 @@
+[package]
+name = "math-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["orangejuiceplz"]
+description = "A Discord bot written in Rust that helps solve math equations step by step for free"
+license = "MIT"
+repository = "https://github.com/orangejuiceplz/math-rs"
+
+[dependencies]
+# Discord bot framework
+serenity = { version = "0.12", default-features = false, features = ["client", "gateway", "rustls_backend", "model", "cache"] }
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+
+# Math computation and parsing
+meval = "0.2"
+regex = "1.10"
+
+# Serialization and data handling
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Environment variables and configuration
+dotenv = "0.15"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Time and UUID for session management
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4"] }
+
+# Async utilities
+dashmap = "5.5"  # Thread-safe HashMap for concurrent session management
+
+# LaTeX rendering (we'll add this later when we implement rendering)
+# latex = "0.3"
+# image = "0.24"
+
+[dev-dependencies]
+tokio-test = "0.4"
