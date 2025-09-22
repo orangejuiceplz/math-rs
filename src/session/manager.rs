@@ -1,7 +1,7 @@
 use super::MathSession;
 use crate::math::solver::solve_math_problem;
 use dashmap::DashMap;
-use serenity::model::{id::UserId, prelude::Message};
+use serenity::all::{ChannelId, Message, UserId};
 use std::sync::Arc;
 use tracing::{debug, info, warn};
 
@@ -22,7 +22,7 @@ impl SessionManager {
     pub fn create_session(
         &self,
         user_id: UserId,
-        channel_id: serenity::model::id::ChannelId,
+        channel_id: ChannelId,
     ) -> String {
         // checks if user already has an active session
         if let Some(existing_session) = self.sessions.get(&user_id) {

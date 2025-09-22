@@ -1,7 +1,5 @@
 use chrono::{DateTime, Utc};
-use dashmap::DashMap;
-use serenity::model::{id::UserId, prelude::Message};
-use std::sync::Arc;
+use serenity::all::{ChannelId, UserId};
 use uuid::Uuid;
 
 pub mod manager;
@@ -11,14 +9,14 @@ pub use manager::SessionManager;
 pub struct MathSession {
     pub id: Uuid,
     pub user_id: UserId,
-    pub channel_id: serenity::model::id::ChannelId,
+    pub channel_id: ChannelId,
     pub created_at: DateTime<Utc>,
     pub last_activity: DateTime<Utc>,
     pub conversation_history: Vec<String>,
 }
 
 impl MathSession {
-    pub fn new(user_id: UserId, channel_id: serenity::model::id::ChannelId) -> Self {
+    pub fn new(user_id: UserId, channel_id: ChannelId) -> Self {
         let now = Utc::now();
         Self {
             id: Uuid::new_v4(),

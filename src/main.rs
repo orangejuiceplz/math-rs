@@ -5,13 +5,12 @@ mod utils;
 
 use anyhow::Result;
 use serenity::{
-    async_trait,
-    model::{
-        application::interaction::{Interaction, InteractionResponseType},
-        gateway::Ready,
-        id::GuildId,
-        prelude::*,
+    all::{
+        Command, CreateInteractionResponse, 
+        CreateInteractionResponseMessage, GatewayIntents, 
+        Interaction, Message, Ready,
     },
+    async_trait,
     prelude::*,
 };
 use std::env;
@@ -42,11 +41,8 @@ impl EventHandler for Handler {
         ];
 
         for command in commands {
-            if let Err(why) = Command::create_global_application_command(&ctx.http, |cmd| {
-                *cmd = command;
-                cmd
-            })
-            .await
+            if let Err(why) = Command::create_global_command(&ctx.http, command)
+                .await
             {
                 error!("Cannot create slash command: {}", why);
             }
@@ -56,7 +52,7 @@ impl EventHandler for Handler {
     }
 
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
-        if let Interaction::ApplicationCommand(command) = interaction {
+        if let Interaction::Command(command) = interaction {
             let content = match command.data.name.as_str() {
                 "mathbot" => {
                     commands::session::run(&ctx, &command, &self.session_manager).await
@@ -65,11 +61,9 @@ impl EventHandler for Handler {
             };
 
             if let Err(why) = command
-                .create_interaction_response(&ctx.http, |response| {
-                    response
-                        .kind(InteractionResponseType::ChannelMessageWithSource)
-                        .interaction_response_data(|message| message.content(content))
-                })
+                .create_response(&ctx.http, CreateInteractionResponse::Message(
+                    CreateInteractionResponseMessage::new().content(content)
+                ))
                 .await
             {
                 error!("Cannot respond to slash command: {}", why);

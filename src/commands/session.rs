@@ -1,40 +1,38 @@
 use crate::session::SessionManager;
 use serenity::{
-    builder::CreateApplicationCommand,
-    model::prelude::interaction::application_command::ApplicationCommandInteraction,
+    all::{
+        CommandInteraction, CommandOptionType, CreateCommand, CreateCommandOption,
+    },
     prelude::Context,
 };
 
-pub fn register() -> CreateApplicationCommand {
-    let mut command = CreateApplicationCommand::default();
-    command
-        .name("mathbot")
+pub fn register() -> CreateCommand {
+    CreateCommand::new("mathbot")
         .description("Math bot commands")
-        .create_option(|option| {
-            option
-                .name("action")
-                .description("What action to perform")
-                .kind(serenity::model::prelude::command::CommandOptionType::String)
-                .required(true)
-                .add_string_choice("Start Session", "start")
-                .add_string_choice("End Session", "end")
-                .add_string_choice("Session Info", "info")
-        });
-    
-    command
+        .add_option(
+            CreateCommandOption::new(
+                CommandOptionType::String,
+                "action",
+                "What action to perform",
+            )
+            .required(true)
+            .add_string_choice("Start Session", "start")
+            .add_string_choice("End Session", "end")
+            .add_string_choice("Session Info", "info"),
+        )
 }
 
 pub async fn run(
-    ctx: &Context,
-    command: &ApplicationCommandInteraction,
+    _ctx: &Context,
+    command: &CommandInteraction,
     session_manager: &SessionManager,
 ) -> String {
     let action = command
         .data
         .options
-        .get(0)
-        .and_then(|option| option.value.as_ref())
-        .and_then(|value| value.as_str())
+        .iter()
+        .find(|option| option.name == "action")
+        .and_then(|option| option.value.as_str())
         .unwrap_or("start");
 
     let user_id = command.user.id;
